@@ -1,8 +1,11 @@
 {
   "name": "@quadrel-test/test-quadrel",
-  "version": "1.0.1",
-  "description": "Minimal test package for quadrel-test org",
+  "version": "1.0.2",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TEST-Quadrel/test-quadrel"
+  },
   "publishConfig": {
     "access": "public"
   }
