@@ -1,1 +1,41 @@
+name: npm publish via OIDC
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read        # Repo lesen
+  id-token: write       # WICHTIG für OIDC / Trusted publishing
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      - name: Ensure npm >= 11.5.1
+        run: npm install -g npm@latest
+
+      # Optional: nur, falls du ein lockfile hast
+      - name: Install dependencies
+        if: hashFiles('package-lock.json') != ''
+        run: npm ci
+
+      # Optional: Tests
+      - name: Run tests
+        if: success()
+        run: npm test
+
+      - name: Publish to npm via OIDC
+        run: npm publish
 
