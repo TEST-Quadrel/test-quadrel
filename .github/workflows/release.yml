@@ -1,41 +1,33 @@
-name: npm publish via OIDC
+name: npm trusted publisher smoke test
 
 on:
-  push:
-    tags:
-      - "v*"
+  workflow_dispatch: {}
 
 permissions:
-  contents: read        # Repo lesen
-  id-token: write       # WICHTIG für OIDC / Trusted publishing
+  id-token: write    # OIDC für npm
+  contents: read
 
 jobs:
-  publish:
-    runs-on: ubuntu-latest
-
+  publish-test:
+    runs-on: ubuntu-latest   # wichtig: GitHub-hosted runner
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 22
-          registry-url: https://registry.npmjs.org
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
 
-      - name: Ensure npm >= 11.5.1
+      - name: Ensure new npm
         run: npm install -g npm@latest
 
-      # Optional: nur, falls du ein lockfile hast
-      - name: Install dependencies
-        if: hashFiles('package-lock.json') != ''
-        run: npm ci
+      - name: Install deps (if any)
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
 
-      # Optional: Tests
-      - name: Run tests
-        if: success()
-        run: npm test
-
-      - name: Publish to npm via OIDC
-        run: npm publish
-
+      - name: Smoke test publish (dry-run)
+        run: npm publish --dry-run
