@@ -1,7 +1,7 @@
 {
-  "name": "test-quadrel",
+  "name": "@quadrel-test/test-quadrel",
   "version": "1.0.1",
-  "description": "Trusted publisher smoke test",
+  "description": "Minimal test package for quadrel-test org",
   "main": "index.js",
   "publishConfig": {
     "access": "public"
