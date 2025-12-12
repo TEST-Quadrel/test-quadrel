@@ -1,33 +1,30 @@
-name: npm trusted publisher smoke test
+name: Publish test package
 
 on:
   workflow_dispatch: {}
 
 permissions:
-  id-token: write    # OIDC für npm
   contents: read
+  id-token: write
 
 jobs:
   publish-test:
-    runs-on: ubuntu-latest   # wichtig: GitHub-hosted runner
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: 22
+          registry-url: https://registry.npmjs.org
 
-      - name: Ensure new npm
-        run: npm install -g npm@latest
-
-      - name: Install deps (if any)
+      - name: Ensure latest npm
         run: |
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm install
-          fi
+          npm install -g npm@latest
+          npm -v
 
-      - name: Smoke test publish (dry-run)
-        run: npm publish --dry-run
+      - name: Bump patch version
+        run: npm version patch --no-git-tag-version
+
+      - name: Publish via OIDC
+        run: npm publish --access public
